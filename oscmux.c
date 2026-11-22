@@ -22,6 +22,8 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
 #include <unistd.h>
 #include <string.h>
 
@@ -124,14 +126,14 @@ _msg_handler (const char *path, const char *types, lo_arg **argv, int argc, lo_m
 	{
 		lo_bundle bundle = eina_list_nth (out->bundles, 0);
 
-		if (! out->rpath) {
-			out->rpath = path;
-		}
-		
+		// `path` points into liblo's receive buffer and is only valid for the
+		// duration of this call, so never store it; use it per message instead.
+		const char *rpath = out->rpath ? out->rpath : path;
+
 		if (bundle)
 		{
 			lo_message *clone = lo_message_clone (msg);
-			lo_bundle_add_message (bundle, out->rpath, clone);
+			lo_bundle_add_message (bundle, rpath, clone);
 		}
 		else // !bundle
 		{
@@ -151,12 +153,12 @@ _msg_handler (const char *path, const char *types, lo_arg **argv, int argc, lo_m
 				tt.frac += dfrac;
 
 				bundle = lo_bundle_new (tt);
-				lo_bundle_add_message (bundle, out->rpath, msg);
+				lo_bundle_add_message (bundle, rpath, msg);
 				lo_send_bundle (out->addr, bundle);
 				lo_bundle_free (bundle);
 			}
 			else // out->delay == 0.0
-				lo_send_message (out->addr, out->rpath, msg);
+				lo_send_message (out->addr, rpath, msg);
 				
 		}
 	}
