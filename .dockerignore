@@ -1,0 +1,13 @@
+.git
+.github
+.pytest_cache
+__pycache__
+build
+tests
+scripts
+*.md
+Dockerfile
+.dockerignore
+requirements-dev.txt
+pytest.ini
+*.sh
