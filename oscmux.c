@@ -177,7 +177,7 @@ main (int argc, char **argv)
 	Eina_List *groups = NULL;
 	Eina_List *inputs = NULL;
 	Eina_List *outputs = NULL;
-	Group *grp;
+	Group *grp = NULL;
 	int state_outputs = 1;
 
 	eina_init ();
@@ -263,6 +263,12 @@ main (int argc, char **argv)
 				break;
 			case 'o':
 			{
+				if (!grp)
+				{
+					fprintf (stderr, "output (-o) given before any input (-i)\n");
+					return 1;
+				}
+
 				if (!state_outputs)
 					state_outputs = 1;
 
