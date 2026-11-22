@@ -4,3 +4,7 @@ Makefile
 cmake_install.cmake
 install_manifest.txt
 oscmux
+build/
+__pycache__/
+.pytest_cache/
+.venv/
