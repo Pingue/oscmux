@@ -132,7 +132,7 @@ _msg_handler (const char *path, const char *types, lo_arg **argv, int argc, lo_m
 
 		if (bundle)
 		{
-			lo_message *clone = lo_message_clone (msg);
+			lo_message clone = lo_message_clone (msg);
 			lo_bundle_add_message (bundle, rpath, clone);
 		}
 		else // !bundle
@@ -317,7 +317,7 @@ main (int argc, char **argv)
 		EINA_LIST_FOREACH (grp->inputs, l, in)
 		{
 			lo_server_thread_add_method (in->serv, in->path, in->fmt, _msg_handler, grp->outputs);
-			lo_server *serv = lo_server_thread_get_server (in->serv);
+			lo_server serv = lo_server_thread_get_server (in->serv);
 			lo_server_add_bundle_handlers (serv, _bundle_start_handler, _bundle_end_handler, grp->outputs);
 			lo_server_enable_queue (serv, in->queue, 1);
 
@@ -335,7 +335,7 @@ main (int argc, char **argv)
 		if (!in->duplicate)
 		{
 			lo_server_thread_stop (in->serv);
-			lo_server_free (in->serv);
+			lo_server_thread_free (in->serv);
 		}
 
 		if (in->path)
