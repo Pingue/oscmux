@@ -24,7 +24,7 @@ multiplex messages from local ports 1111 and 2222 and send them to port 4444 on 
 
 redirect messages from local port 2222 to local port 3333 with a delay of 1.1 seconds and to port 4444 on 10.0.0.2 with a delay of 4.3 seconds
 
-	oscmux -i osc://localhost:2222 -d 1.1 -o osc:://localhost:3333 -d 4.3 -o osc://10.0.0.2:4444
+	oscmux -i osc://localhost:2222 -d 1.1 -o osc://localhost:3333 -d 4.3 -o osc://10.0.0.2:4444
 
 multiplex messages from local ports 1111 (via udp), 2222 (via udp) and 3333 (via tcp) and send them to local ports 4444 (udp), 5555 (udp) and 6666 (tcp)
 
@@ -49,3 +49,36 @@ redirect messages from local port 1212 to local port 1313 enabling queueing mess
 redirect messages from local port 1212 to local port 1313 disabling queueing (which is the default) messages when told so by a offset timestamp
 
 	oscmux -q -i osc://localhost:1212 -o osc://localhost:1313
+
+# Docker
+
+Images are published to `ghcr.io/pingue/oscmux` (tagged `X.Y.Z`, `X.Y` and `latest`).
+Arguments are passed straight to `oscmux`:
+
+	docker run --rm -p 9000:9000/udp ghcr.io/pingue/oscmux \
+	  -i osc.udp://localhost:9000 -o osc.udp://192.168.1.50:9001
+
+Notes:
+
+- Only the port of an `-i` URL matters (it listens on all interfaces), and it must be published with `-p PORT:PORT/udp`.
+- Inside the container `localhost` is the container itself, so give outputs a real host address, or use `--network host` on Linux.
+
+# Development
+
+Build (see INSTALL.md for dependencies) and run the tests:
+
+	cmake -S . -B build
+	cmake --build build
+	pip install -r requirements-dev.txt
+	pytest
+
+The tests start the real binary, send OSC over UDP and inspect what it forwards. Set `OSCMUX_BIN` to test a different binary,
+for example one built with `-fsanitize=address,undefined` (CI does this).
+
+# Releases
+
+Commits to `master` use [Conventional Commits](https://www.conventionalcommits.org/). After the tests pass, the release
+workflow computes the next [semver](https://semver.org/) version: `feat` bumps minor, `fix`/`perf` bump patch, and `!` or a
+`BREAKING CHANGE:` footer bumps major. Other types (`docs`, `ci`, `chore`, `test`, ...) don't release. When there is
+something to release it publishes the Docker image, tags the commit `vX.Y.Z` and creates a GitHub release with notes grouped
+by commit type.
