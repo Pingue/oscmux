@@ -22,7 +22,12 @@ RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       liblo7 libeina1t64 tini \
  && rm -rf /var/lib/apt/lists/* \
- && useradd --system --no-create-home oscmux
+ && useradd --system --no-create-home oscmux \
+ && mkdir -m 1777 /run/oscmux
+
+# Eina aborts at startup unless it can create a run dir ($XDG_RUNTIME_DIR or
+# $HOME/.run). A sticky world-writable dir works for any user id.
+ENV XDG_RUNTIME_DIR=/run/oscmux
 
 COPY --from=build /src/build/oscmux /usr/local/bin/oscmux
 
