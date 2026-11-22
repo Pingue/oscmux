@@ -1,8 +1,13 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.10)
 
 project (oscmux)
 
 set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+
+if (NOT CMAKE_BUILD_TYPE)
+	set (CMAKE_BUILD_TYPE Release)
+endif ()
+add_compile_options (-Wall -Wextra -Wno-unused-parameter)
 
 set (OSCMUX_VERSION "0.1.0")
 
