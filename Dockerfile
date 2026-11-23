@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:24.04 AS build
+FROM ubuntu:26.04 AS build
 
 # Ubuntu ships the Eina headers only in the EFL meta dev package.
 RUN apt-get update \
@@ -14,7 +14,7 @@ RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
  && cmake --build build
 
 
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 # tini: oscmux has no signal handlers, and as PID 1 it would otherwise ignore
 # SIGTERM (docker stop would wait 10s, then SIGKILL).
